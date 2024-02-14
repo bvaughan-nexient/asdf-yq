@@ -56,6 +56,7 @@ download_release() {
 			fail "Downloaded $TOOL_NAME $version for $platform/$arch but it does not contain the expected binary"
 		fi
 	else
+	  echo *
 		fail "Downloaded $TOOL_NAME $version for $platform/$arch but it does not contain the expected directory"
 	fi
 }
