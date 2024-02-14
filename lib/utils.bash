@@ -50,6 +50,7 @@ download_release() {
 		if [ -f "${TOOL_NAME}_${platform}_${arch}/${TOOL_NAME}_${platform}_${arch}" ]; then
 			echo "Downloaded $TOOL_NAME $version for $platform/$arch"
 			mv ${TOOL_NAME}_${platform}_${arch}/${TOOL_NAME}_${platform}_${arch} ${TOOL_NAME}
+			chmod +x ${TOOL_NAME}
 			rm -rf ${TOOL_NAME}_${platform}_${arch}
 		else
 			fail "Downloaded $TOOL_NAME $version for $platform/$arch but it does not contain the expected binary"
