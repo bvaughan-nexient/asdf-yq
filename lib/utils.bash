@@ -7,6 +7,9 @@ TOOL_NAME="yq"
 TOOL_TEST="yq --version"
 PLATFORM="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"
+[ "$ARCH" = "x86_64" ] && ARCH="amd64"
+[ "$ARCH" = "i386" ] && ARCH="386"
+[ "$ARCH" = "aarch64" ] && ARCH="arm64"
 
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"
