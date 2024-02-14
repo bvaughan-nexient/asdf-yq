@@ -5,6 +5,8 @@ set -euo pipefail
 GH_REPO="https://github.com/mikefarah/yq"
 TOOL_NAME="yq"
 TOOL_TEST="yq --version"
+PLATFORM="$(uname -s | tr '[:upper:]' '[:lower:]')"
+ARCH="$(uname -m)"
 
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"
@@ -34,23 +36,15 @@ list_all_versions() {
 }
 
 download_release() {
-	local version filename url platform arch
+	local version filename url 
 	version="$1"
 	filename="$2"
-	platform="$(uname -s | tr '[:upper:]' '[:lower:]')"
-	arch="$(uname -m)"
+	url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}_${PLATFORM}_${ARCH}.tar.gz"
 
-	url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}_${platform}_${arch}"
-
-	echo "* Downloading $TOOL_NAME for $platform on $arch release $version..."
+	echo "* Downloading $TOOL_NAME for $PLATFORM on $ARCH release $version..."
+	echo "* Download URL: $url"
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
-	tar -tzf "$filename" &>/dev/null || fail "Could not extract $filename"
 	echo "* Download complete"
-	if [ -f $filename -a ! -x $filename ]; then
-		chmod +x $filename
-		echo "* Made $filename executable"
-	fi
-
 }
 
 install_version() {

@@ -18,5 +18,15 @@ download_release "$ASDF_INSTALL_VERSION" "$release_file"
 #  Extract contents of tar.gz file into the download directory
 tar -xzf "$release_file" -C "$ASDF_DOWNLOAD_PATH" --strip-components=1 || fail "Could not extract $release_file"
 
+if [ -f "$ASDF_DOWNLOAD_PATH/${TOOL_NAME}_${PLATFORM}_${ARCH}" ]; then
+  # Move the extracted files to the install directory
+  mv "$ASDF_DOWNLOAD_PATH/${TOOL_NAME}_${PLATFORM}_${ARCH}" "$ASDF_DOWNLOAD_PATH/${TOOL_NAME}"
+  if [ ! -x "$ASDF_DOWNLOAD_PATH/${TOOL_NAME}" ]; then
+    chmod +x "$ASDF_DOWNLOAD_PATH/${TOOL_NAME}"
+    echo "set execute bit on $ASDF_DOWNLOAD_PATH/${TOOL_NAME}"
+  fi
+else
+  fail "Could not find yq in the release tarball"
+fi
 # Remove the tar.gz file since we don't need to keep it
 rm "$release_file"
