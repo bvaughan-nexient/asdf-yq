@@ -2,10 +2,14 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for yq.
 GH_REPO="https://github.com/mikefarah/yq"
 TOOL_NAME="yq"
 TOOL_TEST="yq --version"
+PLATFORM="$(uname -s | tr '[:upper:]' '[:lower:]')"
+ARCH="$(uname -m)"
+[ "$ARCH" = "x86_64" ] && ARCH="amd64"
+[ "$ARCH" = "i386" ] && ARCH="386"
+[ "$ARCH" = "aarch64" ] && ARCH="arm64"
 
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"
@@ -31,8 +35,6 @@ list_github_tags() {
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if yq has other means of determining installable versions.
 	list_github_tags
 }
 
@@ -40,12 +42,12 @@ download_release() {
 	local version filename url
 	version="$1"
 	filename="$2"
+	url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}_${PLATFORM}_${ARCH}.tar.gz"
 
-	# TODO: Adapt the release URL convention for yq
-	url="$GH_REPO/archive/v${version}.tar.gz"
-
-	echo "* Downloading $TOOL_NAME release $version..."
+	echo "* Downloading $TOOL_NAME for $PLATFORM on $ARCH release $version..."
+	echo "* Download URL: $url"
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+	echo "* Download complete"
 }
 
 install_version() {
@@ -61,7 +63,6 @@ install_version() {
 		mkdir -p "$install_path"
 		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
-		# TODO: Assert yq executable exists.
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
 		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
