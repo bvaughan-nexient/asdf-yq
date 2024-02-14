@@ -42,13 +42,15 @@ download_release() {
 
 	url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}_${platform}_${arch}.tar.gz"
 
-	echo "* Downloading $TOOL_NAME release $version..."
+	echo "* Downloading $TOOL_NAME for $platform on $arch release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
 	tar -tzf "$filename" &>/dev/null || fail "Could not extract $filename"
+	echo "* Download complete"
 	if [ -d "${TOOL_NAME}_${platform}_${arch}" ]; then
 		if [ -f "${TOOL_NAME}_${platform}_${arch}/${TOOL_NAME}_${platform}_${arch}" ]; then
 			echo "Downloaded $TOOL_NAME $version for $platform/$arch"
 			mv ${TOOL_NAME}_${platform}_${arch}/${TOOL_NAME}_${platform}_${arch} ${TOOL_NAME}
+			rm -rf ${TOOL_NAME}_${platform}_${arch}
 		else
 			fail "Downloaded $TOOL_NAME $version for $platform/$arch but it does not contain the expected binary"
 		fi
