@@ -40,25 +40,17 @@ download_release() {
 	platform="$(uname -s | tr '[:upper:]' '[:lower:]')"
 	arch="$(uname -m)"
 
-	url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}_${platform}_${arch}.tar.gz"
+	url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}_${platform}_${arch}"
 
 	echo "* Downloading $TOOL_NAME for $platform on $arch release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
 	tar -tzf "$filename" &>/dev/null || fail "Could not extract $filename"
 	echo "* Download complete"
-	if [ -d "${TOOL_NAME}_${platform}_${arch}" ]; then
-		if [ -f "${TOOL_NAME}_${platform}_${arch}/${TOOL_NAME}_${platform}_${arch}" ]; then
-			echo "Downloaded $TOOL_NAME $version for $platform/$arch"
-			mv ${TOOL_NAME}_${platform}_${arch}/${TOOL_NAME}_${platform}_${arch} ${TOOL_NAME}
-			chmod +x ${TOOL_NAME}
-			rm -rf ${TOOL_NAME}_${platform}_${arch}
-		else
-			fail "Downloaded $TOOL_NAME $version for $platform/$arch but it does not contain the expected binary"
-		fi
-	else
-	  echo *
-		fail "Downloaded $TOOL_NAME $version for $platform/$arch but it does not contain the expected directory"
+	if [ -f $filename -a ! -x $filename ]; then
+		chmod +x $filename
+		echo "* Made $filename executable"
 	fi
+
 }
 
 install_version() {
